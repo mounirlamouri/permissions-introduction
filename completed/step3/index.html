@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Restaurants Recommandations</title>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <script src='/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script async defer src='helpers.js'></script>
+  <link rel='import' href='local-restaurant.html'>
+</head>
+<body unresolved>
+  <div id='restaurant-list'></div>
+  <div id='geolocation-banner' hidden>
+    <span>You can have better location-based result if you grant us access to
+    your location. Are you interested?</span>
+    <button>I'm in</button>
+  </div>
+</body>
+<script async defer>
+navigator.permissions.query({name:'geolocation'}).then(function(p) {
+  switch (p.state) {
+    case 'denied':
+      showTopRestaurants();
+      break;
+    case 'granted':
+      navigator.geolocation.getCurrentPosition(showRestaurantsAround);
+      break;
+    case 'prompt':
+      showTopRestaurants();
+
+      var banner = document.querySelector('#geolocation-banner');
+      banner.hidden = false;
+      var button = banner.querySelector('button');
+      button.onclick = function() {
+        banner.hidden = true;
+        navigator.geolocation.getCurrentPosition(showRestaurantsAround);
+      };
+      break;
+  }
+});
+</script>
+</html>
